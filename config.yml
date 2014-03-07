@@ -1,0 +1,29 @@
+#By SquidFruit Directed By GarretSidzaka!
+#If onlineevent is true it will put fire works when players join and send them the on
+#joinmessage our example onjoinmessage: 'test'
+onlineevent: true
+onjoinmessage: 'test'
+#This is what comes up infront of the messages!
+prefix: '&4[&1SwornAnnouncer&4]'
+#delay is equal to minutes 
+#list of messages
+#Must have permmision swornannouncer.default to be sent message
+delay: 1
+#If you want to have a multiline message use %NEWLN
+# Example - '&4Test1%NEWLNTest2'
+#Test2 Would Be On A Line Below :)
+random: false
+messages:
+ - '&4test1'
+ - '&2test2'
+ - '&1test3'
+ - '&etest4'
+ #Must have permmision swornannouncer.staff to be sent message
+delayforstaff: 1
+randomstaffmessages: false
+messagesforstaff:
+ - '&4test1staff'
+ - '&2test2staff'
+ - '&1test3staff'
+ - '&etest4staff'
+ 

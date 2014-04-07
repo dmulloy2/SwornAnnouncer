@@ -23,9 +23,9 @@ public class SwornAnnouncer extends JavaPlugin
 		reloadConfig();
 
 		PluginManager pm = getServer().getPluginManager();
-		pm.registerEvents( new PlayerJoin( this ), this );
+		pm.registerEvents( new PlayerListener( this ), this );
 
-		getCommand( "sareload" ).setExecutor( new Cmd( this ) );
+		getCommand( "sareload" ).setExecutor( new SwornAnnouncerCommand( this ) );
 
 		int delay = getConfig().getInt( "delay", 2 );
 		int delayforstaff = getConfig().getInt( "delayforstaff", 2 );

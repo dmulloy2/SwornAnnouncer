@@ -6,14 +6,15 @@ import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
-public class Cmd implements CommandExecutor
+public class SwornAnnouncerCommand implements CommandExecutor
 {
 	private SwornAnnouncer plugin;
-	public Cmd(SwornAnnouncer plugin)
+	public SwornAnnouncerCommand(SwornAnnouncer plugin)
 	{
 		this.plugin = plugin;
 	}
 
+	@Override
 	public boolean onCommand(CommandSender sender, Command cmd, String commandLabel, String[] args)
 	{
 		if ( commandLabel.equalsIgnoreCase( "sareload" ) )

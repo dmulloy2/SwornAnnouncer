@@ -15,10 +15,10 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.FireworkMeta;
 import org.bukkit.inventory.meta.ItemMeta;
 
-public class PlayerJoin implements Listener
+public class PlayerListener implements Listener
 {
 	private SwornAnnouncer plugin;
-	public PlayerJoin(SwornAnnouncer plugin)
+	public PlayerListener(SwornAnnouncer plugin)
 	{
 		this.plugin = plugin;
 	}

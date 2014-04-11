@@ -1,6 +1,5 @@
 package com.squidfruit.swornannouncer;
 
-import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Color;
 import org.bukkit.FireworkEffect;
@@ -9,11 +8,13 @@ import org.bukkit.Material;
 import org.bukkit.entity.Firework;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.FireworkMeta;
 import org.bukkit.inventory.meta.ItemMeta;
+import org.bukkit.scheduler.BukkitRunnable;
 
 public class PlayerListener implements Listener
 {
@@ -23,83 +24,67 @@ public class PlayerListener implements Listener
 		this.plugin = plugin;
 	}
 
-	@EventHandler
-	public void onPlayerJoin(final PlayerJoinEvent pje)
+	@EventHandler(priority = EventPriority.NORMAL)
+	public void onPlayerJoin(PlayerJoinEvent event)
 	{
-		boolean MessageOnJoin = plugin.getConfig().getBoolean( "onlineevent" );
-		if ( MessageOnJoin )
+		if ( plugin.getConfig().getBoolean( "onJoin.enabled" ) )
 		{
-			Player player = pje.getPlayer();
+			final Player player = event.getPlayer();
+			final ItemStack inHand = new ItemStack( player.getItemInHand() );
+			final ItemStack give = new ItemStack( Material.APPLE );
 
-			// does the new feture (adds welcome message in itembox)
-			final ItemStack inv = player.getItemInHand().clone();
-			final ItemStack stack = new ItemStack( Material.DIRT, 1 );
-			final ItemStack air = new ItemStack( Material.AIR );
-
-			Bukkit.getServer().getScheduler().scheduleSyncDelayedTask( plugin, new Runnable()
+			new BukkitRunnable()
 			{
 				@Override
 				public void run()
 				{
-					Player player = pje.getPlayer();
+					ItemMeta meta = give.getItemMeta();
+					meta.setDisplayName( ChatColor.GREEN + "Welcome to the server, " + player.getName() );
+					give.setItemMeta( meta );
 
-					ItemMeta meta = stack.getItemMeta();
-					meta.setDisplayName( ChatColor.GREEN + "Welcome To The Server " + player.getName() );
-					stack.setItemMeta( meta );
+					player.getInventory().setItemInHand( give );
 
-					if ( player.getItemInHand().getType() == Material.AIR )
+					// Fireworks :D
+					Firework firework = player.getWorld().spawn( player.getLocation(), Firework.class );
+					FireworkMeta fm = firework.getFireworkMeta();
+					fm.addEffect( FireworkEffect.builder().flicker( false ).trail( true ).with( Type.BALL ).with( Type.BALL_LARGE )
+							.with( Type.STAR ).withColor( Color.ORANGE ).withColor( Color.YELLOW ).withFade( Color.PURPLE )
+							.withFade( Color.RED ).build() );
+					fm.setPower( 2 );
+					firework.setFireworkMeta( fm );
+
+					firework = player.getWorld().spawn( player.getLocation(), Firework.class );
+					fm = firework.getFireworkMeta();
+					fm.addEffect( FireworkEffect.builder().flicker( false ).trail( true ).with( Type.BALL ).with( Type.BURST )
+							.with( Type.STAR ).withColor( Color.GREEN ).withColor( Color.YELLOW ).withFade( Color.PURPLE )
+							.withFade( Color.AQUA ).build() );
+
+					fm.setPower( 1 );
+					firework.setFireworkMeta( fm );
+
+					// Broadcast message, if applicable
+					String message = plugin.getConfig().getString( "onJoin.message" );
+					if ( ! message.isEmpty() )
 					{
-						player.getInventory().setItemInHand( stack );
-						Bukkit.getServer().getScheduler().scheduleSyncDelayedTask( plugin, new Runnable()
+						message = ChatColor.translateAlternateColorCodes( '&', message );
+						for ( Player p : plugin.getServer().getOnlinePlayers() )
 						{
-							@Override
-							public void run()
-							{
-								Player player = pje.getPlayer();
-								player.setItemInHand( air );
-							}
-						}, 35 );
-					}
-
-					player.getInventory().setItemInHand( stack );
-
-					for ( Player player2 : plugin.getServer().getOnlinePlayers() )
-					{
-						player2.sendMessage( ChatColor.AQUA + player.getName() + "'s "
-								+ plugin.getConfig().getString( "onjoinmessage" ).replaceAll( "(&([a-f0-9]))", "\u00A7$2" ) );
-						Firework f = pje.getPlayer().getWorld().spawn( pje.getPlayer().getLocation(), Firework.class );
-						Firework f2 = pje.getPlayer().getWorld().spawn( pje.getPlayer().getLocation(), Firework.class );
-
-						FireworkMeta fm = f.getFireworkMeta();
-						fm.addEffect( FireworkEffect.builder().flicker( false ).trail( true ).with( Type.BALL ).with( Type.BALL_LARGE )
-								.with( Type.STAR ).withColor( Color.ORANGE ).withColor( Color.YELLOW ).withFade( Color.PURPLE )
-								.withFade( Color.RED ).build() );
-
-						fm.setPower( 2 );
-						f.setFireworkMeta( fm );
-
-						FireworkMeta fm2 = f2.getFireworkMeta();
-						fm2.addEffect( FireworkEffect.builder().flicker( false ).trail( true ).with( Type.BALL ).with( Type.BURST )
-								.with( Type.STAR ).withColor( Color.GREEN ).withColor( Color.YELLOW ).withFade( Color.PURPLE )
-								.withFade( Color.AQUA ).build() );
-
-						fm2.setPower( 1 );
-						f2.setFireworkMeta( fm2 );
+							p.sendMessage( message );
+						}
 					}
 				}
-			}, 1 );
+			}.runTaskLater( plugin, 1L );
 
-			Bukkit.getServer().getScheduler().scheduleSyncDelayedTask( plugin, new Runnable()
+			new BukkitRunnable()
 			{
 				@Override
 				public void run()
 				{
-					Player player = pje.getPlayer();
-					player.getInventory().remove( stack );
-					player.setItemInHand( inv );
+					// Return their item
+					player.getInventory().remove( give );
+					player.setItemInHand( inHand );
 				}
-
-			}, 35 );
+			}.runTaskLater( plugin, 35L );
 		}
 	}
 }

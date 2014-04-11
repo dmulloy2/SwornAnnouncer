@@ -17,7 +17,7 @@ messageSets:
       - "&ePlease edit your configuration and change these messages!"
       - "&eThis creates a %NEWLN &enew line!"
 
-#If onlineevent is true it will put fire works when players join and send them the on
-#joinmessage our example onjoinmessage: 'test'
-onlineevent: true
-onjoinmessage: 'test'
+# Cool effects and stuff on player join
+onJoin:
+  enabled: true
+  message: ''

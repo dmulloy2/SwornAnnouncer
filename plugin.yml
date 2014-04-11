@@ -1,12 +1,11 @@
 name: SwornAnnouncer
 main: com.squidfruit.swornannouncer.SwornAnnouncer
-version: 2.0
-description: >
-             Sends The Strings In Config
+version: 2.1
+description: Group-based auto messaging plugin
+authors: [SquidFruit, dmulloy2]
 commands:
     sareload:
-       description: reloads config
-             
+       description: reloads config 
 permissions:
     swornannouncer.default:
         description: lets default players resive messages
@@ -17,5 +16,3 @@ permissions:
     swornannouncer.reload:
         description: lets player reload config
         default: op
-
-

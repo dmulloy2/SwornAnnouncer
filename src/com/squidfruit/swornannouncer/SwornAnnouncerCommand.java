@@ -4,7 +4,6 @@ import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
-import org.bukkit.entity.Player;
 
 public class SwornAnnouncerCommand implements CommandExecutor
 {
@@ -19,15 +18,15 @@ public class SwornAnnouncerCommand implements CommandExecutor
 	{
 		if ( commandLabel.equalsIgnoreCase( "sareload" ) )
 		{
-			Player player = (Player) sender;
-			if ( player.hasPermission( "swornannouncer.reload" ) )
+			if ( sender.hasPermission( "swornannouncer.reload" ))
 			{
 				plugin.reloadConfig();
-				player.sendMessage( ChatColor.GREEN + "SwornAnnouncer Has Been Reloaded" );
+				plugin.loadConfig();
 
+				sender.sendMessage( ChatColor.GREEN + "SwornAnnouncer has been reloaded!" );
 			} else
 			{
-				player.sendMessage( ChatColor.RED + "Sorry You Dont Have Permission To Reload" );
+				sender.sendMessage( ChatColor.RED + "You do not have permission to do this!" );
 			}
 		}
 

@@ -18,6 +18,7 @@ public class SwornAnnouncer extends JavaPlugin
 		// Configuration
 		saveDefaultConfig();
 		reloadConfig();
+		loadConfig();
 
 		// Register command
 		getCommand( "sareload" ).setExecutor( new SwornAnnouncerCommand( this ) );
@@ -26,7 +27,21 @@ public class SwornAnnouncer extends JavaPlugin
 		PluginManager pm = getServer().getPluginManager();
 		pm.registerEvents( new PlayerListener( this ), this );
 
-		// Register auto message tasks
+		getLogger().info( getDescription().getFullName() + " has been enabled" );
+	}
+
+	@Override
+	public void onDisable()
+	{
+		getServer().getScheduler().cancelTasks( this );
+
+		getLogger().info( getDescription().getFullName() + " has been disabled" );
+	}
+
+	public void loadConfig()
+	{
+		getServer().getScheduler().cancelTasks( this );
+
 		if ( getConfig().isSet( "messageSets" ) )
 		{
 			for ( Entry<String, Object> entry : getConfig().getConfigurationSection( "messageSets" ).getValues( false ).entrySet() )
@@ -40,16 +55,6 @@ public class SwornAnnouncer extends JavaPlugin
 				new AutoMessageTask( messageSet ).runTaskTimer( this, messageSet.getDelayInTicks(), messageSet.getDelayInTicks() );
 			}
 		}
-
-		getLogger().info( getDescription().getFullName() + " has been enabled" );
-	}
-
-	@Override
-	public void onDisable()
-	{
-		getServer().getScheduler().cancelTasks( this );
-
-		getLogger().info( getDescription().getFullName() + " has been disabled" );
 	}
 
 	public class AutoMessageTask extends BukkitRunnable

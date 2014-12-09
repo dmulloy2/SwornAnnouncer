@@ -1,0 +1,31 @@
+# SwornAnnouncer Configuration
+# (c) 2014 dmulloy2
+
+# Prefix
+prefix: "&3[&eReminder&3] - "
+
+# Delay (in seconds)
+delay: 90
+
+# Message Sets
+# default (boolean)
+# random (boolean)
+# groups (List<String>)
+# messages (List<String>)
+messages:
+  default:
+    default: true
+    random: true
+    messages:
+      - "&eThank you for choosing SwornAnnouncer!"
+      - "&ePlease edit your configuration and change these messages!"
+
+# Whether or not to use the action bar to send messages
+useActionBar: true
+
+# Actions on player join
+# enabled (boolean)
+# message (String)
+onJoin:
+  enabled: false
+  message: ""

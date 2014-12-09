@@ -1,4 +1,4 @@
 SwornAnnouncer
 ==============
 
-Simple auto announcer for MineSworn
+TODO: Make fancy documentation

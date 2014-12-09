@@ -1,0 +1,18 @@
+name: SwornAnnouncer
+main: net.dmulloy2.swornannouncer.SwornAnnouncer
+version: ${project.version} (Build ${project.build.number})
+description: Group-based auto messaging plugin
+author: dmulloy2
+softdepend: [ProtocolLib, Vault]
+commands:
+  sa:
+    description: SwornAnnouncer main command
+    usage: /<command> <args>
+    aliases: [swornannouncer, am]
+permissions:
+  swornannouncer.cmd.send:
+    description: Allows the use of /am send
+    default: op
+  swornannouncer.cmd.reload:
+    description: Allows the use of /am reload
+    default: op

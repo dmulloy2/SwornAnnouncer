@@ -52,7 +52,7 @@ public class CmdSend extends SwornAnnouncerCommand
 			}
 		}
 
-		String message = plugin.getMPrefix() + FormatUtil.format(getFinalArg(1));
+		String message = plugin.getMessagePrefix() + FormatUtil.format(getFinalArg(1));
 
 		for (Player player : players)
 		{

@@ -52,7 +52,7 @@ public class PlayerListener implements Listener, Reloadable
 			}
 		}
 
-		new JoinMessageTask().runTaskLater(plugin, joinDelay * 20);
+		new JoinMessageTask().runTaskLater(plugin, joinDelay);
 	}
 
 	@Override
@@ -60,6 +60,6 @@ public class PlayerListener implements Listener, Reloadable
 	{
 		this.joinEnabled = plugin.getConfig().getBoolean("onJoin.enabled");
 		this.joinMessage = plugin.getConfig().getString("onJoin.message");
-		this.joinDelay = plugin.getConfig().getInt("onJoin.delay");
+		this.joinDelay = plugin.getConfig().getInt("onJoin.delay") * 20;
 	}
 }

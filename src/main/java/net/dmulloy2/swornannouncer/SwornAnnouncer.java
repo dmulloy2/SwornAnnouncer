@@ -38,6 +38,7 @@ import net.dmulloy2.swornannouncer.tasks.AutoMessageTask;
 import net.dmulloy2.swornannouncer.types.MessageSet;
 import net.dmulloy2.types.Reloadable;
 import net.dmulloy2.util.FormatUtil;
+import net.dmulloy2.util.Util;
 
 import org.bukkit.GameMode;
 import org.bukkit.configuration.MemorySection;
@@ -85,7 +86,7 @@ public class SwornAnnouncer extends SwornPlugin implements Reloadable
 		registerListener(new PlayerListener(this));
 
 		// AutoMessage task
-		new AutoMessageTask(this).runTaskTimer(this, delay * 20, delay * 20);
+		new AutoMessageTask(this).runTaskTimer(this, delay, delay);
 
 		logHandler.log("{0} has been enabled. Took {1} ms.", getDescription().getFullName(), System.currentTimeMillis() - start);
 	}
@@ -136,12 +137,12 @@ public class SwornAnnouncer extends SwornPlugin implements Reloadable
 	private MessageSet defaultSet;
 	private List<MessageSet> messageSets;
 
-	private @Getter String mPrefix;
+	private @Getter String messagePrefix;
 
 	public void loadConfig()
 	{
-		this.delay = getConfig().getInt("delay");
-		this.mPrefix = FormatUtil.format(getConfig().getString("prefix"));
+		this.delay = getConfig().getInt("delay") * 20;
+		this.messagePrefix = FormatUtil.format(getConfig().getString("prefix"));
 		this.useActionBar = getConfig().getBoolean("useActionBar", true);
 
 		this.messageSets = new ArrayList<>();
@@ -154,7 +155,7 @@ public class SwornAnnouncer extends SwornPlugin implements Reloadable
 			boolean random = section.getBoolean("random", true);
 			List<String> messages = new ArrayList<>();
 			for (String message : section.getStringList("messages"))
-				messages.add(mPrefix + FormatUtil.format(message));
+				messages.add(messagePrefix + FormatUtil.format(message));
 			List<String> groups = new ArrayList<>();
 			for (String group : section.getStringList("groups"))
 				messages.add(group.toLowerCase());
@@ -199,6 +200,9 @@ public class SwornAnnouncer extends SwornPlugin implements Reloadable
 
 	public final void sendMessage(Player player, String message)
 	{
+		// Replace variables
+		message = replaceVariables(player, message);
+
 		// Attempt to use the Action Bar (ProtocolLib)
 		// Interesting caveat: Players do not see the action bar while in creative
 		if (useActionBar && isProtocolLibEnabled() && player.getGameMode() != GameMode.CREATIVE)
@@ -209,6 +213,15 @@ public class SwornAnnouncer extends SwornPlugin implements Reloadable
 
 		// Fall back to the old method
 		player.sendMessage(message);
+	}
+
+	public final String replaceVariables(Player player, String message)
+	{
+		// TODO: Add some more variables
+		return message.replaceAll("%name", player.getName())
+				.replaceAll("%world", player.getWorld().getName())
+				.replaceAll("%online", Util.getOnlinePlayers().size() + "")
+				.replaceAll("%max_players", getServer().getMaxPlayers() + "");
 	}
 
 	private final boolean isProtocolLibEnabled()

@@ -26,6 +26,8 @@ useActionBar: true
 # Actions on player join
 # enabled (boolean)
 # message (String)
+# delay (in seconds)
 onJoin:
   enabled: false
   message: ""
+  delay: 6

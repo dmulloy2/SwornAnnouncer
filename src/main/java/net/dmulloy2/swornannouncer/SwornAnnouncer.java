@@ -151,16 +151,25 @@ public class SwornAnnouncer extends SwornPlugin implements Reloadable
 		{
 			String name = entry.getKey();
 			MemorySection section = (MemorySection) entry.getValue();
+
 			boolean isDefault = section.getBoolean("default", false);
 			boolean random = section.getBoolean("random", true);
+
 			List<String> messages = new ArrayList<>();
 			for (String message : section.getStringList("messages"))
 				messages.add(messagePrefix + FormatUtil.format(message));
+
+			if (messages.isEmpty())
+			{
+				logHandler.log(Level.WARNING, "Message set {0} does not have any messages!", name);
+				continue;
+			}
+
 			List<String> groups = new ArrayList<>();
 			for (String group : section.getStringList("groups"))
 				messages.add(group.toLowerCase());
 
-			MessageSet messageSet = new MessageSet(name, random, messages, groups);
+			MessageSet messageSet = new MessageSet(name, random, groups, messages);
 			messageSets.add(messageSet);
 
 			if (isDefault)

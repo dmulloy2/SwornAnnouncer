@@ -5,6 +5,7 @@ package net.dmulloy2.swornannouncer.listeners;
 
 import net.dmulloy2.swornannouncer.SwornAnnouncer;
 import net.dmulloy2.types.Reloadable;
+import net.dmulloy2.util.FormatUtil;
 import net.dmulloy2.util.Util;
 
 import org.bukkit.entity.Player;
@@ -58,8 +59,8 @@ public class PlayerListener implements Listener, Reloadable
 	@Override
 	public void reload()
 	{
-		this.joinEnabled = plugin.getConfig().getBoolean("onJoin.enabled");
-		this.joinMessage = plugin.getConfig().getString("onJoin.message");
-		this.joinDelay = plugin.getConfig().getInt("onJoin.delay") * 20;
+		this.joinEnabled = plugin.getConfig().getBoolean("onJoin.enabled", false);
+		this.joinMessage = FormatUtil.format(plugin.getConfig().getString("onJoin.message", ""));
+		this.joinDelay = plugin.getConfig().getInt("onJoin.delay", 6) * 20;
 	}
 }

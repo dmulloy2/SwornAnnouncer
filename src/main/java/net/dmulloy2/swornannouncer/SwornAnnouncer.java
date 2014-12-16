@@ -40,7 +40,6 @@ import net.dmulloy2.types.Reloadable;
 import net.dmulloy2.util.FormatUtil;
 import net.dmulloy2.util.Util;
 
-import org.bukkit.GameMode;
 import org.bukkit.configuration.MemorySection;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Listener;
@@ -93,8 +92,15 @@ public class SwornAnnouncer extends SwornPlugin implements Reloadable
 
 	private final void setupIntegration()
 	{
-		try { protocolHandler = new ProtocolHandler(this); } catch (Throwable ex) { }
-		try { vaultHandler = new VaultHandler(this); } catch (Throwable ex) { }
+		try
+		{
+			protocolHandler = new ProtocolHandler(this);
+		} catch (Throwable ex) { }
+
+		try
+		{
+			vaultHandler = new VaultHandler(this);
+		} catch (Throwable ex) { }
 	}
 
 	private final void registerListener(Listener listener)
@@ -214,7 +220,7 @@ public class SwornAnnouncer extends SwornPlugin implements Reloadable
 
 		// Attempt to use the Action Bar (ProtocolLib)
 		// Interesting caveat: Players do not see the action bar while in creative
-		if (useActionBar && isProtocolLibEnabled() && player.getGameMode() != GameMode.CREATIVE)
+		if (useActionBar && isProtocolLibEnabled()/* && player.getGameMode() != GameMode.CREATIVE*/)
 		{
 			if (protocolHandler.sendActionMessage(player, message))
 				return;

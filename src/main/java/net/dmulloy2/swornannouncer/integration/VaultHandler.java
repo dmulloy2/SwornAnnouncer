@@ -3,9 +3,13 @@
  */
 package net.dmulloy2.swornannouncer.integration;
 
+import java.util.logging.Level;
+
 import lombok.Getter;
-import net.dmulloy2.integration.IntegrationHandler;
+import net.dmulloy2.integration.DependencyProvider;
 import net.dmulloy2.swornannouncer.SwornAnnouncer;
+import net.dmulloy2.util.Util;
+import net.milkbowl.vault.Vault;
 import net.milkbowl.vault.permission.Permission;
 
 import org.bukkit.entity.Player;
@@ -16,43 +20,45 @@ import org.bukkit.plugin.RegisteredServiceProvider;
  */
 
 @Getter
-public class VaultHandler extends IntegrationHandler
+public class VaultHandler extends DependencyProvider<Vault>
 {
 	private Permission permission;
-	private boolean enabled;
-
-	private final SwornAnnouncer plugin;
 	public VaultHandler(SwornAnnouncer plugin)
 	{
-		this.plugin = plugin;
+		super(plugin, "Vault");
 		this.setup();
 	}
 
-	@Override
-	public void setup()
+	private final void setup()
 	{
+		if (! isEnabled())
+			return;
+
 		try
 		{
-			RegisteredServiceProvider<Permission> permProvider = plugin.getServer().getServicesManager().getRegistration(Permission.class);
-			if (permProvider != null)
-			{
-				this.permission = permProvider.getProvider();
-				this.enabled = true;
-
-				plugin.getLogHandler().log("Permission integration through {0}.", permission.getName());
-			}
+			RegisteredServiceProvider<Permission> provider = handler.getServer().getServicesManager().getRegistration(Permission.class);
+			if (provider != null)
+				this.permission = provider.getProvider();
 		}
 		catch (Throwable ex)
 		{
-			enabled = false;
+			handler.getLogHandler().debug(Level.WARNING, Util.getUsefulStack(ex, "setup()"));
 		}
 	}
 
 	public final String getGroup(Player player)
 	{
-		if (enabled && permission != null)
+		if (! isEnabled())
+			return null;
+
+		try
 		{
-			return permission.getPrimaryGroup(player);
+			if (permission != null)
+				return permission.getPrimaryGroup(player);
+		}
+		catch (Throwable ex)
+		{
+			handler.getLogHandler().debug(Level.WARNING, Util.getUsefulStack(ex, "getGroup(" + player.getName() + ")"));
 		}
 
 		return null;

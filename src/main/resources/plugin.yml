@@ -1,7 +1,7 @@
 name: SwornAnnouncer
 main: net.dmulloy2.swornannouncer.SwornAnnouncer
 version: ${project.version} (Build ${project.build.number})
-description: Group-based auto messaging plugin
+description: Group-based auto messaging plugin utilizing the action bar.
 author: dmulloy2
 softdepend: [ProtocolLib, Vault]
 commands:

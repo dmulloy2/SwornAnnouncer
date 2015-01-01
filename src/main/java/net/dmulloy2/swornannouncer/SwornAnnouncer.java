@@ -40,6 +40,7 @@ import net.dmulloy2.types.Reloadable;
 import net.dmulloy2.util.FormatUtil;
 import net.dmulloy2.util.Util;
 
+import org.bukkit.GameMode;
 import org.bukkit.configuration.MemorySection;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Listener;
@@ -90,6 +91,8 @@ public class SwornAnnouncer extends SwornPlugin implements Reloadable
 		logHandler.log("{0} has been enabled. Took {1} ms.", getDescription().getFullName(), System.currentTimeMillis() - start);
 	}
 
+	// ---- Integration
+
 	private final void setupIntegration()
 	{
 		try
@@ -101,6 +104,16 @@ public class SwornAnnouncer extends SwornPlugin implements Reloadable
 		{
 			vaultHandler = new VaultHandler(this);
 		} catch (Throwable ex) { }
+	}
+
+	private final boolean isProtocolLibEnabled()
+	{
+		return protocolHandler != null && protocolHandler.isEnabled();
+	}
+
+	private final boolean isVaultEnabled()
+	{
+		return vaultHandler != null && vaultHandler.isEnabled();
 	}
 
 	private final void registerListener(Listener listener)
@@ -137,7 +150,8 @@ public class SwornAnnouncer extends SwornPlugin implements Reloadable
 		}
 	}
 
-	// ---- Config Options
+	// ---- Configuration
+
 	private int delay;
 	private boolean useActionBar;
 	private MessageSet defaultSet;
@@ -183,6 +197,8 @@ public class SwornAnnouncer extends SwornPlugin implements Reloadable
 		}
 	}
 
+	// ---- Messaging
+
 	public final void sendMessage(Player player)
 	{
 		String group = isVaultEnabled() ? vaultHandler.getGroup(player) : null;
@@ -218,9 +234,9 @@ public class SwornAnnouncer extends SwornPlugin implements Reloadable
 		// Replace variables
 		message = replaceVariables(player, message);
 
-		// Attempt to use the Action Bar (ProtocolLib)
+		// Attempt to use the Action Bar (Requires ProtocolLib)
 		// Interesting caveat: Players do not see the action bar while in creative
-		if (useActionBar && isProtocolLibEnabled()/* && player.getGameMode() != GameMode.CREATIVE*/)
+		if (useActionBar && isProtocolLibEnabled() && player.getGameMode() != GameMode.CREATIVE)
 		{
 			if (protocolHandler.sendActionMessage(player, message))
 				return;
@@ -237,15 +253,5 @@ public class SwornAnnouncer extends SwornPlugin implements Reloadable
 				.replaceAll("%world", player.getWorld().getName())
 				.replaceAll("%online", Util.getOnlinePlayers().size() + "")
 				.replaceAll("%max_players", getServer().getMaxPlayers() + "");
-	}
-
-	private final boolean isProtocolLibEnabled()
-	{
-		return protocolHandler != null && protocolHandler.isEnabled();
-	}
-
-	private final boolean isVaultEnabled()
-	{
-		return vaultHandler != null && vaultHandler.isEnabled();
 	}
 }

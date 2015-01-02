@@ -1,5 +1,5 @@
 # SwornAnnouncer Configuration
-# (c) 2014 dmulloy2
+# (c) 2015 dmulloy2
 
 # Prefix
 prefix: "&3[&eReminder&3] - "
@@ -31,3 +31,11 @@ onJoin:
   enabled: false
   message: ""
   delay: 6
+
+# Duration (in seconds)
+# Should be a multiple of 4
+duration: 4
+
+# Action bar (boolean)
+# Whether or not to use the action bar
+useActionBar: true

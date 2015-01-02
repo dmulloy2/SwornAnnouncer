@@ -1,6 +1,6 @@
 /**
  * SwornAnnouncer - a bukkit plugin
- * Copyright (C) 2014 dmulloy2
+ * Copyright (C) 2014 - 2015 dmulloy2
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU General Public License as published by the Free Software
@@ -18,6 +18,7 @@
 package net.dmulloy2.swornannouncer;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -35,6 +36,7 @@ import net.dmulloy2.swornannouncer.integration.ProtocolHandler;
 import net.dmulloy2.swornannouncer.integration.VaultHandler;
 import net.dmulloy2.swornannouncer.listeners.PlayerListener;
 import net.dmulloy2.swornannouncer.tasks.AutoMessageTask;
+import net.dmulloy2.swornannouncer.tasks.MessageSendTask;
 import net.dmulloy2.swornannouncer.types.MessageSet;
 import net.dmulloy2.types.Reloadable;
 import net.dmulloy2.util.FormatUtil;
@@ -55,6 +57,8 @@ public class SwornAnnouncer extends SwornPlugin implements Reloadable
 	private @Getter VaultHandler vaultHandler;
 
 	private @Getter String prefix = FormatUtil.format("&3[&eSwornAnnouncer&3]&e ");
+
+	private @Getter Map<String, MessageSendTask> tasks;
 	private List<Listener> listeners;
 
 	@Override
@@ -85,6 +89,8 @@ public class SwornAnnouncer extends SwornPlugin implements Reloadable
 		listeners = new ArrayList<>();
 		registerListener(new PlayerListener(this));
 
+		tasks = new HashMap<>();
+
 		// AutoMessage task
 		new AutoMessageTask(this).runTaskTimer(this, delay, delay);
 
@@ -106,7 +112,7 @@ public class SwornAnnouncer extends SwornPlugin implements Reloadable
 		} catch (Throwable ex) { }
 	}
 
-	private final boolean isProtocolLibEnabled()
+	private final boolean isProtocolEnabled()
 	{
 		return protocolHandler != null && protocolHandler.isEnabled();
 	}
@@ -131,6 +137,7 @@ public class SwornAnnouncer extends SwornPlugin implements Reloadable
 		getServer().getScheduler().cancelTasks(this);
 
 		// Clear memory
+		tasks.clear();
 		listeners.clear();
 		messageSets.clear();
 
@@ -153,6 +160,7 @@ public class SwornAnnouncer extends SwornPlugin implements Reloadable
 	// ---- Configuration
 
 	private int delay;
+	private int duration;
 	private boolean useActionBar;
 	private MessageSet defaultSet;
 	private List<MessageSet> messageSets;
@@ -162,6 +170,7 @@ public class SwornAnnouncer extends SwornPlugin implements Reloadable
 	public void loadConfig()
 	{
 		this.delay = getConfig().getInt("delay") * 20;
+		this.duration = getConfig().getInt("duration", 2) / 2;
 		this.messagePrefix = FormatUtil.format(getConfig().getString("prefix"));
 		this.useActionBar = getConfig().getBoolean("useActionBar", true);
 
@@ -231,15 +240,30 @@ public class SwornAnnouncer extends SwornPlugin implements Reloadable
 
 	public final void sendMessage(Player player, String message)
 	{
+		sendMessage(player, message, false);
+	}
+
+	public final void sendMessage(Player player, String message, boolean repeat)
+	{
 		// Replace variables
 		message = replaceVariables(player, message);
 
 		// Attempt to use the Action Bar (Requires ProtocolLib)
 		// Interesting caveat: Players do not see the action bar while in creative
-		if (useActionBar && isProtocolLibEnabled() && player.getGameMode() != GameMode.CREATIVE)
+		if (useActionBar && isProtocolEnabled() && player.getGameMode() != GameMode.CREATIVE)
 		{
 			if (protocolHandler.sendActionMessage(player, message))
+			{
+				if (duration > 1 && ! repeat)
+				{
+					logHandler.debug("Displaying message {0} to {1} for {2} seconds.", message, player.getName(), duration);
+					MessageSendTask task = new MessageSendTask(this, player, message, duration);
+					task.runTaskTimer(this, 40L, 40L); // Every 2 seconds
+					tasks.put(player.getName(), task);
+				}
+
 				return;
+			}
 		}
 
 		// Fall back to the old method

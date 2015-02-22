@@ -160,7 +160,6 @@ public class SwornAnnouncer extends SwornPlugin implements Reloadable
 	// ---- Configuration
 
 	private int delay;
-	private int duration;
 	private boolean useActionBar;
 	private MessageSet defaultSet;
 	private List<MessageSet> messageSets;
@@ -170,7 +169,6 @@ public class SwornAnnouncer extends SwornPlugin implements Reloadable
 	public void loadConfig()
 	{
 		this.delay = getConfig().getInt("delay") * 20;
-		this.duration = getConfig().getInt("duration", 2) / 2;
 		this.messagePrefix = FormatUtil.format(getConfig().getString("prefix"));
 		this.useActionBar = getConfig().getBoolean("useActionBar", true);
 
@@ -248,6 +246,8 @@ public class SwornAnnouncer extends SwornPlugin implements Reloadable
 		// Replace variables
 		message = replaceVariables(player, message);
 
+		int duration = (int) Math.ceil(message.length() / 20);
+
 		// Attempt to use the Action Bar (Requires ProtocolLib)
 		// Interesting caveat: Players do not see the action bar while in creative
 		if (useActionBar && isProtocolEnabled() && player.getGameMode() != GameMode.CREATIVE)
@@ -258,7 +258,7 @@ public class SwornAnnouncer extends SwornPlugin implements Reloadable
 				{
 					logHandler.debug("Displaying message {0} to {1} for {2} seconds.", message, player.getName(), duration);
 					MessageSendTask task = new MessageSendTask(this, player, message, duration);
-					task.runTaskTimer(this, 40L, 40L); // Every 2 seconds
+					task.runTaskTimer(this, 20L, 20L); // Every second
 					tasks.put(player.getName(), task);
 				}
 

@@ -20,9 +20,6 @@ messages:
       - "&eThank you for choosing SwornAnnouncer!"
       - "&ePlease edit your configuration and change these messages!"
 
-# Whether or not to use the action bar to send messages
-useActionBar: true
-
 # Actions on player join
 # enabled (boolean)
 # message (String)
@@ -31,10 +28,6 @@ onJoin:
   enabled: false
   message: ""
   delay: 6
-
-# Duration (in seconds)
-# Should be a multiple of 4
-duration: 4
 
 # Action bar (boolean)
 # Whether or not to use the action bar

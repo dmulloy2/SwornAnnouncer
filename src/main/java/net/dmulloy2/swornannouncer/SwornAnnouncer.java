@@ -42,7 +42,6 @@ import net.dmulloy2.types.Reloadable;
 import net.dmulloy2.util.FormatUtil;
 import net.dmulloy2.util.Util;
 
-import org.bukkit.GameMode;
 import org.bukkit.configuration.MemorySection;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Listener;
@@ -160,6 +159,7 @@ public class SwornAnnouncer extends SwornPlugin implements Reloadable
 	// ---- Configuration
 
 	private int delay;
+	private int durationMod;
 	private boolean useActionBar;
 	private MessageSet defaultSet;
 	private List<MessageSet> messageSets;
@@ -169,6 +169,7 @@ public class SwornAnnouncer extends SwornPlugin implements Reloadable
 	public void loadConfig()
 	{
 		this.delay = getConfig().getInt("delay") * 20;
+		this.durationMod = getConfig().getInt("durationMod", 30);
 		this.messagePrefix = FormatUtil.format(getConfig().getString("prefix"));
 		this.useActionBar = getConfig().getBoolean("useActionBar", true);
 
@@ -194,7 +195,7 @@ public class SwornAnnouncer extends SwornPlugin implements Reloadable
 
 			List<String> groups = new ArrayList<>();
 			for (String group : section.getStringList("groups"))
-				messages.add(group.toLowerCase());
+				groups.add(group.toLowerCase());
 
 			MessageSet messageSet = new MessageSet(name, random, groups, messages);
 			messageSets.add(messageSet);
@@ -246,14 +247,13 @@ public class SwornAnnouncer extends SwornPlugin implements Reloadable
 		// Replace variables
 		message = replaceVariables(player, message);
 
-		int duration = (int) Math.ceil(message.length() / 20);
-
 		// Attempt to use the Action Bar (Requires ProtocolLib)
-		// Interesting caveat: Players do not see the action bar while in creative
-		if (useActionBar && isProtocolEnabled() && player.getGameMode() != GameMode.CREATIVE)
+		if (useActionBar && isProtocolEnabled())
 		{
 			if (protocolHandler.sendActionMessage(player, message))
 			{
+				// Determine duration based on message length
+				int duration = (int) Math.ceil(message.length() / durationMod);
 				if (duration > 1 && ! repeat)
 				{
 					logHandler.debug("Displaying message {0} to {1} for {2} seconds.", message, player.getName(), duration);

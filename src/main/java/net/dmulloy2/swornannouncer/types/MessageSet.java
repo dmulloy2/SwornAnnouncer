@@ -37,4 +37,10 @@ public class MessageSet
 
 		return message;
 	}
+
+	@Override
+	public String toString()
+	{
+		return "MessageSet[name=" + name + ", random=" + random + ", groups=" + groups + ", messages=" + messages + "]";
+	}
 }

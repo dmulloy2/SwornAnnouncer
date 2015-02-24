@@ -32,3 +32,5 @@ onJoin:
 # Action bar (boolean)
 # Whether or not to use the action bar
 useActionBar: true
+
+# 

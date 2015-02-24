@@ -33,4 +33,5 @@ onJoin:
 # Whether or not to use the action bar
 useActionBar: true
 
-# 
+# Duration modifier
+durationMod: 30

@@ -50,7 +50,7 @@ import org.bukkit.event.Listener;
  * @author dmulloy2
  */
 
-public class SwornAnnouncer extends SwornPlugin implements Reloadable
+public class SwornAnnouncer extends SwornPlugin
 {
 	private @Getter ProtocolHandler protocolHandler;
 	private @Getter VaultHandler vaultHandler;

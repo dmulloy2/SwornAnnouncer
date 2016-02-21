@@ -26,6 +26,8 @@ import java.util.logging.Level;
 
 import lombok.Getter;
 import net.dmulloy2.SwornPlugin;
+import net.dmulloy2.chat.ChatUtil;
+import net.dmulloy2.chat.TextComponent;
 import net.dmulloy2.commands.CmdHelp;
 import net.dmulloy2.handlers.CommandHandler;
 import net.dmulloy2.handlers.LogHandler;
@@ -33,11 +35,11 @@ import net.dmulloy2.handlers.PermissionHandler;
 import net.dmulloy2.integration.VaultHandler;
 import net.dmulloy2.swornannouncer.commands.CmdReload;
 import net.dmulloy2.swornannouncer.commands.CmdSend;
-import net.dmulloy2.swornannouncer.integration.ProtocolHandler;
 import net.dmulloy2.swornannouncer.listeners.PlayerListener;
 import net.dmulloy2.swornannouncer.tasks.AutoMessageTask;
 import net.dmulloy2.swornannouncer.tasks.MessageSendTask;
 import net.dmulloy2.swornannouncer.types.MessageSet;
+import net.dmulloy2.types.ChatPosition;
 import net.dmulloy2.types.Reloadable;
 import net.dmulloy2.util.FormatUtil;
 import net.dmulloy2.util.Util;
@@ -52,7 +54,6 @@ import org.bukkit.event.Listener;
 
 public class SwornAnnouncer extends SwornPlugin
 {
-	private @Getter ProtocolHandler protocolHandler;
 	private @Getter VaultHandler vaultHandler;
 
 	private @Getter String prefix = FormatUtil.format("&3[&eSwornAnnouncer&3]&e ");
@@ -102,18 +103,8 @@ public class SwornAnnouncer extends SwornPlugin
 	{
 		try
 		{
-			protocolHandler = new ProtocolHandler(this);
-		} catch (Throwable ex) { }
-
-		try
-		{
 			vaultHandler = new VaultHandler(this);
 		} catch (Throwable ex) { }
-	}
-
-	private final boolean isProtocolEnabled()
-	{
-		return protocolHandler != null && protocolHandler.isEnabled();
 	}
 
 	private final boolean isVaultEnabled()
@@ -247,10 +238,10 @@ public class SwornAnnouncer extends SwornPlugin
 		// Replace variables
 		message = replaceVariables(player, message);
 
-		// Attempt to use the Action Bar (Requires ProtocolLib)
-		if (useActionBar && isProtocolEnabled())
+		// Attempt to use the action bar
+		if (useActionBar)
 		{
-			if (protocolHandler.sendActionMessage(player, message))
+			if (sendActionMessage(player, message))
 			{
 				// Determine duration based on message length
 				int duration = (int) Math.ceil(message.length() / durationMod);
@@ -268,6 +259,20 @@ public class SwornAnnouncer extends SwornPlugin
 
 		// Fall back to the old method
 		player.sendMessage(message);
+	}
+
+	private boolean sendActionMessage(Player player, String message)
+	{
+		try
+		{
+			ChatUtil.sendMessageRaw(player, ChatPosition.ACTION_BAR, TextComponent.fromLegacyText(message));
+			return true;
+		}
+		catch (Throwable ex)
+		{
+			logHandler.debug(Util.getUsefulStack(ex, "sending \"{0}\" to {1}", message, player.getName()));
+			return false;
+		}
 	}
 
 	public final String replaceVariables(Player player, String message)

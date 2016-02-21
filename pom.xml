@@ -8,7 +8,7 @@
 
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-    <project.build.number>LOCAL</project.build.number>
+    <project.build.number></project.build.number>
   </properties>
 
   <repositories>
@@ -35,7 +35,7 @@
         </property>
       </activation>
       <properties>
-        <project.build.number>${env.BUILD_NUMBER}</project.build.number>
+        <project.build.number>-b${env.BUILD_NUMBER}</project.build.number>
       </properties>
     </profile>
   </profiles>
@@ -73,6 +73,9 @@
               <goal>shade</goal>
             </goals>
             <configuration>
+              <createDependencyReducedPom>false</createDependencyReducedPom>
+              <minimizeJar>true</minimizeJar>
+
               <artifactSet>
                 <includes>
                   <include>net.dmulloy2:swornapi*</include>
@@ -127,11 +130,6 @@
       <groupId>net.milkbowl.vault</groupId>
       <artifactId>Vault</artifactId>
       <version>1.5.6</version>
-    </dependency>
-    <dependency>
-      <groupId>com.comphenix.protocol</groupId>
-      <artifactId>ProtocolLib</artifactId>
-      <version>3.6.4</version>
     </dependency>
   </dependencies>
 </project>

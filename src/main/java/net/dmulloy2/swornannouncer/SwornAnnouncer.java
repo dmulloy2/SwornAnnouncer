@@ -265,8 +265,7 @@ public class SwornAnnouncer extends SwornPlugin
 	{
 		try
 		{
-			ChatUtil.sendMessageRaw(player, ChatPosition.ACTION_BAR, TextComponent.fromLegacyText(message));
-			return true;
+			return ChatUtil.sendMessageRaw(player, ChatPosition.ACTION_BAR, TextComponent.fromLegacyText(message));
 		}
 		catch (Throwable ex)
 		{
